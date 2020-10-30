@@ -52,7 +52,14 @@ app.post('/register', (req, res) => {
             joined: new Date()
     });
     res.json(database.users[database.users.length -1]);
-})
+});
+
+app.get('/profile/:id', (req, res, next) => {
+    const {id} = req.params;
+    const user = database.users.filter((user) => user.id === id);
+    res.json(user);
+    next();
+});
 
 
 app.listen(3000, ()=> {
