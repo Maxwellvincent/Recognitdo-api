@@ -3,7 +3,7 @@ const bodyParser = require('body-parser');
 const bcrypt = require('bcrypt-nodejs');
 const cors = require('cors');
 const knex = require('knex'); 
-const {PORT, NODE_ENV,CLIENT_ORIGIN} = require('./config');
+const {PORT, CLIENT_ORIGIN} = require('./config');
 
 
 const db = knex({
@@ -53,7 +53,7 @@ app.use(cors({
 //     ]
 // }
 
-app.get('/api/', (req,res) => {
+app.get('/api', (req,res) => {
     // res.send(database.users);
     res.json({ok:true});
 });
@@ -64,19 +64,28 @@ app.post('/signin', (req,res) => {
     .where('email', req.body.email)
     .then(data => {
         const isValid = bcrypt.compareSync(req.body.password,data[0].hash);
+        console.log(data[0].hash)
+        console.log(isValid);
         if(isValid) {
             return db.select('*').from('users')
             .where('email', req.body.email)
             .then(user => {
                 res.json(user[0])
             })
-            .catch(err => res.status(400).json('unable to get user'))
+            .catch(err => {
+                console.error(err.message)
+                res.status(400).json('unable to get user')
+            })
         } else {
+            console.error(err.message)
             res.status(400).json("wrong credentials");
         }
         
     })
-    .catch(err => res.status(400).json('wrong credentials'))
+    .catch(err => {
+        console.error(err.message)
+        res.status(400).json('wrong credentials')
+    })
 });
 
 app.post('/register', (req, res) => {
