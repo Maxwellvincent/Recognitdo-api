@@ -2,7 +2,9 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const bcrypt = require('bcrypt-nodejs');
 const cors = require('cors');
-const knex = require('knex');
+const knex = require('knex'); 
+const {PORT, NODE_ENV,CLIENT_ORIGIN} = require('./config');
+
 
 const db = knex({
     client: 'pg',
@@ -19,7 +21,9 @@ db.select('*').from('users').then(data =>  {
 
 const app = express();
 app.use(bodyParser.json());
-app.use(cors());
+app.use(cors({
+    origin: CLIENT_ORIGIN
+}));
 
 // const database = {
 //     users: [
@@ -49,8 +53,9 @@ app.use(cors());
 //     ]
 // }
 
-app.get('/', (req,res) => {
+app.get('/api/', (req,res) => {
     // res.send(database.users);
+    res.json({ok:true});
 });
 
 
@@ -147,8 +152,8 @@ app.put('/image', (req, res) => {
 
 
 
-app.listen(3001, ()=> {
-    console.log('App is running on port 3001');
+app.listen(PORT, ()=> {
+    console.log(`App is running on port ${PORT}`);
 });
 
 
