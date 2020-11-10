@@ -85,7 +85,7 @@ app.post('/signin', (req,res) => {
         console.log(data[0].hash)
         console.log(isValid);
         if(isValid) {
-            return db.select('*').from('users')
+            return knex.select('*').from('users')
             .where('email', req.body.email)
             .then(user => {
                 res.json(user[0])
