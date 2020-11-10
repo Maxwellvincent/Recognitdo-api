@@ -2,20 +2,24 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const bcrypt = require('bcrypt-nodejs');
 const cors = require('cors');
-const knex = require('knex'); 
+// const knex = require('knex'); 
 const {PORT, CLIENT_ORIGIN} = require('./config');
+const knex = require('../db/knex');
 
+// const db = knex({
+//     client: 'pg',
+//     connection: {
+//         host: '127.0.0.1',
+//         user: "postgres",
+//         database: "smart-brain" 
+//     }
+// });
 
-const db = knex({
-    client: 'pg',
-    connection: {
-        host: '127.0.0.1',
-        user: "postgres",
-        database: "smart-brain" 
-    }
-});
+// db.select('*').from('users').then(data =>  {
+//     console.log(data);
+// });
 
-db.select('*').from('users').then(data =>  {
+knex('users').then(data =>  {
     // console.log(data);
 });
 
