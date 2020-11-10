@@ -55,6 +55,10 @@ app.use(cors());
 //     ]
 // }
 
+app.get('/', (req,res) => {
+    res.json({message: "You have connected to the Recognitdo Api"});
+})
+
 app.get('/api', (req,res) => {
     // res.send(database.users);
     res.json({ok:true});
