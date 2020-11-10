@@ -77,7 +77,7 @@ app.get('/api', (req,res) => {
 
 
 app.post('/signin', (req,res) => {
-    db.select('email', 'hash').from('login')
+    knex.select('email', 'hash').from('login')
     .where('email', req.body.email)
     .then(data => {
         console.log(data);
@@ -113,7 +113,7 @@ app.post('/register', (req, res) => {
     //     console.log(hash);
     // });
     const hash = bcrypt.hashSync(password);
-        db.transaction(trx => {
+        knex.transaction(trx => {
             trx.insert({
                 hash: hash,
                 email: email
@@ -140,7 +140,7 @@ app.post('/register', (req, res) => {
 
 app.get('/profile/:id', (req, res) => {
     const {id} = req.params;
-    db.select('*').from('users').where({
+    knex.select('*').from('users').where({
         id: id
     })
     .then(user => {
@@ -155,7 +155,7 @@ app.get('/profile/:id', (req, res) => {
 
 app.put('/image', (req, res) => {
     const {id} = req.body;
-   db('users').where('id','=', id ).increment('entries', 1)
+   knex('users').where('id','=', id ).increment('entries', 1)
    .returning('entries')
    .then(entries => {
        res.json(entries[0]);
