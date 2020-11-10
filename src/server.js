@@ -16,14 +16,12 @@ const db = knex({
 });
 
 db.select('*').from('users').then(data =>  {
-    console.log(data);
+    // console.log(data);
 });
 
 const app = express();
 app.use(bodyParser.json());
-app.use(cors({
-    origin: CLIENT_ORIGIN
-}));
+app.use(cors());
 
 // const database = {
 //     users: [
@@ -63,6 +61,7 @@ app.post('/signin', (req,res) => {
     db.select('email', 'hash').from('login')
     .where('email', req.body.email)
     .then(data => {
+        console.log(data);
         const isValid = bcrypt.compareSync(req.body.password,data[0].hash);
         console.log(data[0].hash)
         console.log(isValid);
