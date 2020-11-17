@@ -191,6 +191,8 @@ app.listen(PORT, ()=> {
 });
 
 
+module.exports = app;
+
 /* want a route route to
 / --> res = this is working
 /signin --> POST success / fail

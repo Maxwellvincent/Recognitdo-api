@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "test": "(dropdb --if-exists smartbrain-test && createdb smartbrain-test) && set NODE_ENV=test&& mocha --require test/setup.js",
     "dev": "nodemon src/server.js",
     "start": "nodemon src/server.js"
   },
@@ -31,6 +32,9 @@
     "pg": "^8.4.2"
   },
   "devDependencies": {
-    "nodemon": "^2.0.6"
+    "chai": "^4.2.0",
+    "mocha": "^8.2.1",
+    "nodemon": "^2.0.6",
+    "supertest": "^6.0.1"
   }
 }
