@@ -26,6 +26,17 @@ knex('users').then(data =>  {
 const app = express();
 app.use(bodyParser.json());
 app.use(cors());
+app.use(function(req, res, next) {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,PATCH,OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Content-Length, X-Requested-With');
+    // allow preflight
+    if (req.method === 'OPTIONS') {
+        res.send(200);
+    } else {
+        next();
+    }
+});
 
 // const database = {
 //     users: [
@@ -55,6 +66,10 @@ app.use(cors());
 //     ]
 // }
 
+app.get('/', (req,res) => {
+    res.json({message: "You have connected to the Recognitdo Api"});
+})
+
 app.get('/api', (req,res) => {
     // res.send(database.users);
     res.json({ok:true});
@@ -62,7 +77,7 @@ app.get('/api', (req,res) => {
 
 
 app.post('/signin', (req,res) => {
-    db.select('email', 'hash').from('login')
+    knex.select('email', 'hash').from('login')
     .where('email', req.body.email)
     .then(data => {
         console.log(data);
@@ -70,7 +85,7 @@ app.post('/signin', (req,res) => {
         console.log(data[0].hash)
         console.log(isValid);
         if(isValid) {
-            return db.select('*').from('users')
+            return knex.select('*').from('users')
             .where('email', req.body.email)
             .then(user => {
                 res.json(user[0])
@@ -98,7 +113,7 @@ app.post('/register', (req, res) => {
     //     console.log(hash);
     // });
     const hash = bcrypt.hashSync(password);
-        db.transaction(trx => {
+        knex.transaction(trx => {
             trx.insert({
                 hash: hash,
                 email: email
@@ -125,7 +140,7 @@ app.post('/register', (req, res) => {
 
 app.get('/profile/:id', (req, res) => {
     const {id} = req.params;
-    db.select('*').from('users').where({
+    knex.select('*').from('users').where({
         id: id
     })
     .then(user => {
@@ -138,14 +153,21 @@ app.get('/profile/:id', (req, res) => {
     .catch(err => res.status(400).json('error getting user'))
 });
 
-app.put('/image', (req, res) => {
+app.put('/image', async (req, res) => {
     const {id} = req.body;
-   db('users').where('id','=', id ).increment('entries', 1)
+   knex('users').where('id',id ).increment('entries', 1)
    .returning('entries')
-   .then(entries => {
-       res.json(entries[0]);
+   .then(async entries => {
+       return res.json(entries);
+        //  console.log(typeof res.send(entries[0]));
+        // console.log(res.json(entries[0]));
+        // const results =  
+        // res.json(entries[0])
+        // console.log(results);
+        // res.json(entries[0]);
+        // res.send(entries[0]);
    })
-   .catch(err = res.status(400).json('unable to get entries'))
+//    .catch(err = res.status(400).json('unable to get entries'))
 });
 
 
@@ -168,6 +190,8 @@ app.listen(PORT, ()=> {
     console.log(`App is running on port ${PORT}`);
 });
 
+
+module.exports = app;
 
 /* want a route route to
 / --> res = this is working

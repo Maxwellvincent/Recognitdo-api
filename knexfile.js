@@ -9,7 +9,7 @@ module.exports = {
 
   test: {
     client: 'pg',
-    connection: "postgres://localhost/smart-brain-test"
+    connection: "postgres://localhost/smartbrain-test"
   },
   
   production: {
