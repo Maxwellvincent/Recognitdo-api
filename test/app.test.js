@@ -1,6 +1,8 @@
 const {expect} = require('chai');
 const request  = require('supertest');
 const app  = require('../src/server');
+const bcrypt = require('bcrypt-nodejs');
+const hash = bcrypt.hashSync("123");
 // const fixtures = require('./fixtures');
 
 
@@ -42,17 +44,42 @@ describe('Crud applications', () => {
             })
     });
 
-    it('Grabs a user by id, and returns the user object', async (done) => {
-        await request(app)
+    it('Grabs a user by id, and returns the user object', (done) => {
+         request(app)
             .get('/profile/1')
             .set('Accept', 'application/json')
             .expect('Content-Type', /json/)
             .expect(200)
-            .then(async (resp) => {
-                console.log(resp)
+            .then((resp) => {
+                
+                expect(resp.body).to.include({id: 1});
                 done();
             });
-    })
+    });
+
+
+    it('should not add a user', () => {
+        request(app)
+        .post('/register')
+        .send({
+            id: 3,
+            hash: hash,
+            email: "test23@mail.com"
+          })
+        .then(resp => {
+            expect(resp.body).to.be('unable to register')
+        })
+    });
+
+    it('should receive status of 200, when the entries endpoint  is updated', () => {
+        
+        request(app)
+        .put('/image')
+        .send({
+            id: 1
+        })
+        .expect(200)
+    });
 
 
 
