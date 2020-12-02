@@ -75,7 +75,7 @@ app.get('/api', (req,res) => {
     res.json({ok:true});
 });
 
-
+// Signin
 app.post('/signin', (req,res) => {
     knex.select('email', 'hash').from('login')
     .where('email', req.body.email)
@@ -105,6 +105,8 @@ app.post('/signin', (req,res) => {
         res.status(400).json('wrong credentials')
     })
 });
+
+// registration
 
 app.post('/register', (req, res) => {
     const {email, name, password} = req.body;
