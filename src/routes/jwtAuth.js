@@ -1,9 +1,10 @@
 const auth = require('express').Router();
 const bcrypt = require('bcrypt-nodejs');
 const knex = require('../../db/knex');
+const jwtGenerator = require('../utils/jwtGenerator');
 
 
-
+//Register Rout
 auth.post('/register', async (req,res) => {
     try {
         //1. destructure the req.body (name, email, password)
@@ -36,13 +37,48 @@ auth.post('/register', async (req,res) => {
             .returning('*')
         })
 
-        res.json(newUser[0])
+        
         //5. generating the jwt token 
-
+        const token = jwtGenerator(newUser[0].id);
+        res.json({token});
 
     } catch (err) {
         console.log(err.message);
         res.status(500).send('Server Error');
     }
-})
+});
+
+//Login route
+auth.post("/login", async (req,res) => {
+    try {
+
+        //1. destructure the req.body 
+        const {email, password} = req.body;
+        //2. check is user doesnt exist, if not throw error
+        const user = await knex.select('*').from('login').where({email})
+        
+        if(user.length === 0 ){
+            //means that user does not exist
+            return res.status(401).json("Password or Email is incorrect");
+        }
+
+        //3. Check if the password is the same as the database login password.
+
+        const validPassword = bcrypt.compareSync(password, user[0].hash);
+        //returns a boolen
+        if(!validPassword){
+            return res.status(401).json("Password of Email is incorrect");
+        }
+        
+        //4. give token to the users. 
+
+        const token = jwtGenerator(user[0].id);
+        res.json({token});
+
+    } catch (err) {
+        console.log(err.message);
+        res.status(500).send('Server Error');
+    }
+});
+
 module.exports = auth;
