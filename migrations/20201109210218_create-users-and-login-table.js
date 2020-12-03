@@ -21,3 +21,31 @@ exports.down = function(knex) {
     .dropTable('login')
     .dropTable('users')
 };
+
+// const database = {
+//     users: [
+//         {
+//             id: '123',
+//             name: 'John',
+//             email: 'john@example.com',
+//             password: 'cookies',
+//             entries: 0,
+//             joined: new Date()
+//         },
+//         {
+//             id: '1234',
+//             name: 'Sally',
+//             email: 'sally@example.com',
+//             password: 'bananas',
+//             entries: 0,
+//             joined: new Date()
+//         }
+//     ],
+//     login: [
+//         {
+//             id: "123",
+//             hash: '',
+//             email: "john@example.com"
+//         }
+//     ]
+// }

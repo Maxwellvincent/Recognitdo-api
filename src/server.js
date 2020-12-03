@@ -3,8 +3,8 @@ const bodyParser = require('body-parser');
 const bcrypt = require('bcrypt-nodejs');
 const jwtGenerator = require("../src/utils/jwtGenerator");
 const cors = require('cors');
-// const knex = require('knex'); 
-const {PORT, CLIENT_ORIGIN} = require('./config');
+const auth = require('../src/routes/jwtAuth');
+const {PORT} = require('./config');
 const knex = require('../db/knex');
 const validinfo = require("../src/middleware/validinfo");
 
@@ -28,6 +28,7 @@ knex('users').then(data =>  {
 const app = express();
 app.use(bodyParser.json());
 app.use(cors());
+app.use(express.json()) // allows us to get req.body
 app.use(function(req, res, next) {
     res.header('Access-Control-Allow-Origin', '*');
     res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,PATCH,OPTIONS');
@@ -40,34 +41,9 @@ app.use(function(req, res, next) {
     }
 });
 
-// const database = {
-//     users: [
-//         {
-//             id: '123',
-//             name: 'John',
-//             email: 'john@example.com',
-//             password: 'cookies',
-//             entries: 0,
-//             joined: new Date()
-//         },
-//         {
-//             id: '1234',
-//             name: 'Sally',
-//             email: 'sally@example.com',
-//             password: 'bananas',
-//             entries: 0,
-//             joined: new Date()
-//         }
-//     ],
-//     login: [
-//         {
-//             id: "123",
-//             hash: '',
-//             email: "john@example.com"
-//         }
-//     ]
-// }
 
+//ROUTES//
+app.use('/auth', auth)
 app.get('/', (req,res) => {
     res.json({message: "You have connected to the Recognitdo Api"});
 })
@@ -134,6 +110,7 @@ app.post('/register', validinfo, async (req, res) => {
             })
             .then(user => {
                 // res.json(user[0]);
+                //Get the email, use email to search for user in users table. 
                 const token = jwtGenerator(user[0].id)
                 res.json({token});
             })
