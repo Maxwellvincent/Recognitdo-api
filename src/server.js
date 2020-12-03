@@ -1,10 +1,12 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const bcrypt = require('bcrypt-nodejs');
+const jwtGenerator = require("../src/utils/jwtGenerator");
 const cors = require('cors');
 // const knex = require('knex'); 
 const {PORT, CLIENT_ORIGIN} = require('./config');
 const knex = require('../db/knex');
+const validinfo = require("../src/middleware/validinfo");
 
 // const db = knex({
 //     client: 'pg',
@@ -76,14 +78,14 @@ app.get('/api', (req,res) => {
 });
 
 // Signin
-app.post('/signin', (req,res) => {
+app.post('/signin', validinfo, async (req,res) => {
     knex.select('email', 'hash').from('login')
     .where('email', req.body.email)
     .then(data => {
-        console.log(data);
+        // console.log(data);
         const isValid = bcrypt.compareSync(req.body.password,data[0].hash);
         console.log(data[0].hash)
-        console.log(isValid);
+        // console.log(isValid);
         if(isValid) {
             return knex.select('*').from('users')
             .where('email', req.body.email)
@@ -108,36 +110,38 @@ app.post('/signin', (req,res) => {
 
 // registration
 
-app.post('/register', (req, res) => {
+app.post('/register', validinfo, async (req, res) => {
     const {email, name, password} = req.body;
     // bcrypt.hash(password, null, null, function(err, hash) {
     //     //store hash in your password DB.
     //     console.log(hash);
     // });
     const hash = bcrypt.hashSync(password);
-        knex.transaction(trx => {
-            trx.insert({
-                hash: hash,
-                email: email
-            })
-            .into('login')
-            .returning('email')
-            .then(loginEmail => {
-                return trx('users')
-                .returning('*')
-                .insert({
-                    email: loginEmail[0],
-                    name: name,
-                    joined: new Date()
-                })
-                .then(user => {
-                    res.json(user[0]);
-                })
-            })
-            .then(trx.commit)
-            .catch(trx.rollback)
+    knex.transaction(trx => {
+        trx.insert({
+            hash: hash,
+            email: email
         })
-        .catch(err => res.status(400).json('unable to register'))
+        .into('login')
+        .returning('email')
+        .then(loginEmail => {
+            return trx('users')
+            .returning('*')
+            .insert({
+                email: loginEmail[0],
+                name: name,
+                joined: new Date()
+            })
+            .then(user => {
+                // res.json(user[0]);
+                const token = jwtGenerator(user[0].id)
+                res.json({token});
+            })
+        })
+        .then(trx.commit)
+        .catch(trx.rollback)
+    })
+    .catch(err => res.status(400).json('unable to register'))
 });
 
 app.get('/profile/:id', (req, res) => {
