@@ -7,6 +7,7 @@ const auth = require('../src/routes/jwtAuth');
 const {PORT} = require('./config');
 const knex = require('../db/knex');
 const validinfo = require("../src/middleware/validinfo");
+const dashboard = require('./routes/dashboard');
 
 // const db = knex({
 //     client: 'pg',
@@ -43,7 +44,14 @@ app.use(function(req, res, next) {
 
 
 //ROUTES//
+
+// register and login routes
 app.use('/auth', auth)
+
+// dashboard routes
+app.use('/dashboard', dashboard)
+
+
 app.get('/', (req,res) => {
     res.json({message: "You have connected to the Recognitdo Api"});
 })

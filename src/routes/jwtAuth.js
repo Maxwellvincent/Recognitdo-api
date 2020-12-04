@@ -2,10 +2,11 @@ const auth = require('express').Router();
 const bcrypt = require('bcrypt-nodejs');
 const knex = require('../../db/knex');
 const jwtGenerator = require('../utils/jwtGenerator');
-
+const validInfo = require('../middleware/validinfo');
+const authorization = require('../middleware/authorization');
 
 //Register Rout
-auth.post('/register', async (req,res) => {
+auth.post('/register', validInfo, async (req,res) => {
     try {
         //1. destructure the req.body (name, email, password)
         const {name, email, password} = req.body;
@@ -49,7 +50,7 @@ auth.post('/register', async (req,res) => {
 });
 
 //Login route
-auth.post("/login", async (req,res) => {
+auth.post("/login", validInfo, async (req,res) => {
     try {
 
         //1. destructure the req.body 
@@ -72,7 +73,7 @@ auth.post("/login", async (req,res) => {
         
         //4. give token to the users. 
 
-        const token = jwtGenerator(user[0].id);
+        const token = jwtGenerator(user[0].email);
         res.json({token});
 
     } catch (err) {
@@ -80,5 +81,16 @@ auth.post("/login", async (req,res) => {
         res.status(500).send('Server Error');
     }
 });
+
+//Verification route
+
+auth.get("/is-verify", authorization, async (req,res) => {
+    try {
+        res.json(true);
+    } catch (err) {
+        console.log(err.message);
+        res.status(500).send('Server Error');
+    }
+})
 
 module.exports = auth;
