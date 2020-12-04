@@ -8,7 +8,7 @@ const {PORT} = require('./config');
 const knex = require('../db/knex');
 const validinfo = require("../src/middleware/validinfo");
 const dashboard = require('./routes/dashboard');
-
+const authorization = require('../src/middleware/authorization');
 // const db = knex({
 //     client: 'pg',
 //     connection: {
@@ -144,20 +144,26 @@ app.get('/profile/:id', (req, res) => {
     .catch(err => res.status(400).json('error getting user'))
 });
 
-app.put('/image', async (req, res) => {
-    const {id} = req.body;
-   knex('users').where('id',id ).increment('entries', 1)
-   .returning('entries')
-   .then(async entries => {
-       return res.json(entries);
-        //  console.log(typeof res.send(entries[0]));
-        // console.log(res.json(entries[0]));
-        // const results =  
-        // res.json(entries[0])
-        // console.log(results);
-        // res.json(entries[0]);
-        // res.send(entries[0]);
-   })
+app.put('/image', authorization, async (req, res) => {
+    console.log(req.user);
+    const user = req.user;
+    try {
+        const response = await knex('users').where('email',user).increment('entries', 1);
+        res.json(response);
+    } catch (err) {
+        console.error(err.message);
+    }
+//    .then(async entries => {
+//        console.log(entries)
+//        return res.json(entries);
+//         //  console.log(typeof res.send(entries[0]));
+//         // console.log(res.json(entries[0]));
+//         // const results =  
+//         // res.json(entries[0])
+//         // console.log(results);
+//         // res.json(entries[0]);
+//         // res.send(entries[0]);
+//    })
 //    .catch(err = res.status(400).json('unable to get entries'))
 });
 
