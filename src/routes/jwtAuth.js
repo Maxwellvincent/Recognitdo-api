@@ -15,8 +15,10 @@ auth.post('/register', validInfo, async (req,res) => {
             email: email
         });
 
+        // console.log(user);
+
         if(user.length !== 0){
-            return res.status(401).send('User already exist')
+            return res.status(401).json('User already exist')
         }
         
         //3. Bcrypt the user password 
@@ -57,7 +59,7 @@ auth.post("/login", validInfo, async (req,res) => {
         const {email, password} = req.body;
         //2. check is user doesnt exist, if not throw error
         const user = await knex.select('*').from('login').where({email})
-        
+        console.log(user);
         if(user.length === 0 ){
             //means that user does not exist
             return res.status(401).json("Password or Email is incorrect");
