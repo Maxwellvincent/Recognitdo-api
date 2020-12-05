@@ -4,13 +4,18 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon server.js"
+    "test": "(dropdb --if-exists smartbrain-test && createdb smartbrain-test) && set NODE_ENV=test&& mocha --require test/setup.js",
+    "dev": "nodemon src/server.js",
+    "start": "nodemon src/server.js"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Maxwellvincent/Recognitdo-api.git"
   },
   "keywords": [],
+  "engines": {
+    "node": "14.15.0"
+  },
   "author": "",
   "license": "ISC",
   "bugs": {
@@ -22,10 +27,14 @@
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
     "express": "^4.17.1",
+    "heroku": "^7.47.0",
     "knex": "^0.21.12",
     "pg": "^8.4.2"
   },
   "devDependencies": {
-    "nodemon": "^2.0.6"
+    "chai": "^4.2.0",
+    "mocha": "^8.2.1",
+    "nodemon": "^2.0.6",
+    "supertest": "^6.0.1"
   }
 }
