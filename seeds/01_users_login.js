@@ -22,6 +22,12 @@ exports.seed = function(knex) {
           entries: 0,
           joined: new Date()
         },
+        { id: '3',
+        name: 'user',
+        email: 'user@mail.com',
+        entries: 0,
+        joined: new Date()
+      },
       ]);
     })
     .then(() => {
@@ -36,6 +42,11 @@ exports.seed = function(knex) {
           id:2,
           hash,
           email: 'sally@example.com'
+        },
+        {
+          id:3,
+          hash,
+          email: 'user@mail.com'
         }
       ])
     });
