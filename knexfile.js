@@ -4,9 +4,9 @@ module.exports = {
 
   development: {
     client: 'pg',
-    // connection: "postgres://localhost/smart-brain"
+    connection: "postgres://localhost/smart-brain"
     // connection: "postgres://localhost/smart_brain" // for Mac 
-    connection: process.env.DATABASE_URL
+    // connection: process.env.DATABASE_URL
   },
 
   test: {
